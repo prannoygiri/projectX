@@ -12,4 +12,4 @@ USER node
 
 CMD npm i --shamefully-hoist && nodemon
 
-#to run using nodemon
+#CMD npm run develop
