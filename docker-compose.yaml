@@ -16,6 +16,7 @@ services:
     restart: unless-stopped
     depends_on:
       - api
+      - strapi
       - bhadminer
 
   strapi:
@@ -54,6 +55,7 @@ services:
       - ./api:/home/node/app
     restart: unless-stopped
     depends_on:
+      - strapi
       - db
 
   db:

@@ -10,6 +10,6 @@ RUN npm install -g pnpm@6.17.2 nodemon
 
 USER node
 
-CMD npm i --shamefully-hoist && nodemon
+CMD npm i --shamefully-hoist && npm run develop
 
 #CMD npm run develop
