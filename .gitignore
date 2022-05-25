@@ -74,10 +74,8 @@ tmux*
 *.orig
 *\ UTC\ *
 *\ IST\ *
-docker-compose.yaml
 ingress/default.conf.template
 docker-compose.kafka.yaml
-docker-compose.yaml
 ingress/conf/bhadminer.bhconf
 ingress/conf/graphdb.bhconf
 ingress/default.conf.template
