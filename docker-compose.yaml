@@ -9,7 +9,7 @@ services:
       - NGINX_PORT=${NGINX_PORT:-80}
       - NGINX_SERVER_NAME=${NGINX_SERVER_NAME:-localhost}
     ports:
-      - ${BH_PORT:-25060}:${NGINX_PORT:-80}
+      - ${BH_PORT:-25080}:${NGINX_PORT:-80}
     volumes:
       - ./nginx/var_www_html:/usr/share/nginx/html
     restart: unless-stopped
@@ -47,10 +47,18 @@ services:
       - |
         nodemon
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "localhost:3000/"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
     depends_on:
-      - init-api
-      - strapi
-      - db
+      init-api:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+      strapi:
+        condition: service_healthy
 
   init-strapi:
     image: node:14-alpine
@@ -88,9 +96,24 @@ services:
       - |
         npm run develop
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl","localhost:1337"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
     depends_on:
-      - init-strapi
-      - db
+      init-strapi:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+
+  redis:
+    image: redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
 
   db:
     image: mariadb:10.6
@@ -104,6 +127,11 @@ services:
       - MYSQL_USER=${DB_USER:-admin}
       - MYSQL_PASSWORD=${DB_PASSWORD:-dbpass}
       - APP_ENV=local
+    healthcheck:
+      test: "/usr/bin/mysql -u $${MYSQL_USER} -p$${MYSQL_PASSWORD} --execute \"SHOW DATABASES;\""
+      interval: 1s
+      timeout: 3s
+      retries: 30
 
   bhadminer:
     image: adminer
