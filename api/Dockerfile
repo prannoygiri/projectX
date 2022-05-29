@@ -6,8 +6,8 @@ WORKDIR /home/node/app
 
 FROM base as dev
 
-RUN npm install -g pnpm@6.17.2 nodemon
+RUN npm install -g nodemon
 
 USER node
 
-CMD pnpm config set store-dir /home/node/.pnpm-store && pnpm i --shamefully-hoist && nodemon --trace-warnings
+CMD nodemon --trace-warnings

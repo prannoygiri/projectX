@@ -11,13 +11,64 @@ services:
     ports:
       - ${BH_PORT:-25060}:${NGINX_PORT:-80}
     volumes:
-      - ./nginx/ssl:/ssl
       - ./nginx/var_www_html:/usr/share/nginx/html
     restart: unless-stopped
     depends_on:
       - api
       - strapi
       - bhadminer
+
+  init-api:
+    image: node:lts-alpine
+    volumes:
+      - ./api:/home/node/app
+    user: root
+    command:
+      - sh
+      - -c
+      - |
+        cd /home/node/app
+        #[[ -s node_modules ]] && exit
+        echo changing permissions...
+        chown node:node .
+        echo installing node packages...
+        npm i
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+      target: dev
+    volumes:
+      - ./api:/home/node/app
+    command:
+      - sh
+      - -c
+      - |
+        nodemon
+    restart: unless-stopped
+    depends_on:
+      - init-api
+      - strapi
+      - db
+
+  init-strapi:
+    image: node:14-alpine
+    volumes:
+      - ./strapi:/home/node/app
+    user: root
+    command:
+      - sh
+      - -c
+      - |
+        cd /home/node/app
+        #[[ -s node_modules ]] && exit
+        echo changing permissions...
+        chown node:node .
+        echo deleting cache & build folders
+        rm -rf .cache build
+        echo installing node packages...
+        npm i
 
   strapi:
     build:
@@ -26,36 +77,19 @@ services:
     environment:
       - STRAPI_DATABASE_HOST=${DB_HOST:-db}
       - STRAPI_DATABASE_PORT=${DB_PORT:-3306}
-      - STRAPI_DATABASE_NAME=${DB_NAME:-bighit}
+      - STRAPI_DATABASE_NAME=${DB_NAME:-api}
       - STRAPI_DATABASE_USER=${DB_USER:-admin}
       - STRAPI_DATABASE_PASSWORD=${DB_PASS:-dbpass}
-    ports:
-      - 1337:1337
     volumes:
       - ./strapi:/home/node/app
+    command:
+      - sh
+      - -c
+      - |
+        npm run develop
     restart: unless-stopped
     depends_on:
-      - db
-
-  api:
-    build:
-      context: ./api
-      dockerfile: Dockerfile
-      target: dev
-    ports:
-      - 3000:8081
-    environment:
-      - API_DATABASE_HOST=${DB_HOST:-db}
-      - API_DATABASE_PORT=${DB_PORT:-3306}
-      - API_DATABASE_NAME=${DB_NAME:-bighit}
-      - API_DATABASE_USER=${DB_USER:-admin}
-      - API_DATABASE_PASSWORD=${DB_PASS:-dbpass}
-    volumes:
-      - pnpm:/home/node/.pnpm-store
-      - ./api:/home/node/app
-    restart: unless-stopped
-    depends_on:
-      - strapi
+      - init-strapi
       - db
 
   db:
@@ -66,7 +100,7 @@ services:
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD="12345"
-      - MYSQL_DATABASE=${DB_NAME:-bighit}
+      - MYSQL_DATABASE=${DB_NAME:-api}
       - MYSQL_USER=${DB_USER:-admin}
       - MYSQL_PASSWORD=${DB_PASSWORD:-dbpass}
       - APP_ENV=local
@@ -77,5 +111,3 @@ services:
 
 volumes:
   mariadata:
-  pnpm:
-    external: true

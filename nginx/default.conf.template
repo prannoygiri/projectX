@@ -18,6 +18,5 @@ server {
     }
 
     include /etc/nginx/conf.d/*.bhconf;
-
 }
 
