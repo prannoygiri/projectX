@@ -6,7 +6,7 @@ module.exports = {
     // resolver: (parent,args,context,info) <- options params
     // here '_' <- parent
     employees: (_,__,context) => context.dataSources.employees.get(),
-    employee: (_, { id }) => context.dataSources.employees.getById(id) || new NotFoundError(),
+    employee: (_,{ id },context) => context.dataSources.employees.getById(id) || new NotFoundError(),
   }, // end Query
 
   // join resolvers

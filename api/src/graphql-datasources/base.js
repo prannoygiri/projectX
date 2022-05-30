@@ -7,7 +7,7 @@ class BaseDS extends DataSource {
         this.cacheKeyBase = cacheKeyBase;
         this.service = service;
         this.loader = new DataLoader(ids => new Promise(async (resolve,reject) => {
-            let results = await service.getByIds(ids,this.context)
+            let results = await service.getByIds(ids)
             return resolve(
                 ids.map((id) => results.find(r => r.id == id))
             )
@@ -33,9 +33,7 @@ class BaseDS extends DataSource {
         }
 
         const doc = await this.service.get(params)
-        if (ttlInSeconds) {
-            this.cache.set(cacheKey, JSON.stringify(doc), { ttl: 3 })
-        }
+        this.cache.set(cacheKey, JSON.stringify(doc), { ttl: 3 })
 
         return doc;
     }

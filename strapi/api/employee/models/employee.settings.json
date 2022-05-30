@@ -2,7 +2,8 @@
   "kind": "collectionType",
   "collectionName": "employees",
   "info": {
-    "name": "Employee"
+    "name": "Employee",
+    "description": ""
   },
   "options": {
     "increments": true,
@@ -22,6 +23,10 @@
     },
     "dob": {
       "type": "date"
+    },
+    "tasks": {
+      "collection": "task",
+      "via": "employee"
     }
   }
 }

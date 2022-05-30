@@ -19,6 +19,10 @@
     },
     "is_complete": {
       "type": "boolean"
+    },
+    "employee": {
+      "via": "tasks",
+      "model": "employee"
     }
   }
 }
