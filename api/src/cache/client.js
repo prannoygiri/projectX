@@ -1,6 +1,5 @@
 
 const Redis = require("ioredis");
-const {IOREDIS_CONFIG} = require('../constants');
 
 let client = new Redis({
   host: process.env.REDIS_HOST || "redis",
