@@ -4,7 +4,6 @@ type Task {
   title: String!
   description: String!
   is_complete: Boolean!
-  employee_id: Int!
   created_at: String
   updated_at: String
   employee: Employee
