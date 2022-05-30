@@ -124,7 +124,7 @@ services:
     image: mariadb:10.6
     volumes:
       - mariadata:/var/lib/mysql
-      - ./db/data:/docker0entrypoint-initdb.d
+      - ./db/data:/docker-entrypoint-initdb.d
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD="12345"
