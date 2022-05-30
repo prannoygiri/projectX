@@ -3,8 +3,8 @@ type Employee {
   id: Int
   name: String
   email: String
-  dob: Date
-  doj: Date
+  dob: String
+  doj: String
   created_at: String
   updated_at: String
   tasks: [Task]
