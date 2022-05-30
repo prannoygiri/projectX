@@ -26,7 +26,7 @@ location /capi/ {
 
 # Strapi cms
 location /strapi {
-  proxy_pass http://strapi:1337/strapi;
+  proxy_pass http://strapi:1337;
   proxy_http_version 1.1;
   proxy_set_header X-Forwarded-Host $host;
   proxy_set_header X-Forwarded-Server $host;
