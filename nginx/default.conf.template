@@ -17,6 +17,6 @@ server {
         root   /usr/share/nginx/html;
     }
 
-    include /etc/nginx/conf.d/*.bhconf;
+    include /etc/nginx/conf.d/*.appconf;
 }
 

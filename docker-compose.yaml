@@ -9,9 +9,14 @@ services:
       - NGINX_PORT=${NGINX_PORT:-80}
       - NGINX_SERVER_NAME=${NGINX_SERVER_NAME:-localhost}
     ports:
-      - ${BH_PORT:-25080}:${NGINX_PORT:-80}
+      - ${ENDPOINT_PORT:-25080}:${NGINX_PORT:-80}
     volumes:
       - ./nginx/var_www_html:/usr/share/nginx/html
+    #command:
+    #  - sh
+    #  - -c
+    #  - |
+    #    while true; do sleep 5 ; done
     restart: unless-stopped
     depends_on:
       - api
@@ -47,17 +52,17 @@ services:
       - |
         nodemon
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "localhost:3000/"]
-      interval: 1s
-      timeout: 3s
-      retries: 30
+    environment:
+      - ENDPOINT_PORT=${ENDPOINT_PORT:-25080}
+    #healthcheck:
+    #  test: ["CMD", "curl","-f","localhost:3000/api/healthCheck"]
+    #  interval: 3s
+    #  timeout: 3s
+    #  retries: 15
     depends_on:
       init-api:
         condition: service_completed_successfully
       redis:
-        condition: service_healthy
-      strapi:
         condition: service_healthy
 
   init-strapi:
@@ -73,8 +78,8 @@ services:
         #[[ -s node_modules ]] && exit
         echo changing permissions...
         chown node:node .
-        echo deleting cache & build folders
-        rm -rf .cache build
+        #echo deleting cache & build folders
+        #rm -rf .cache build
         echo installing node packages...
         npm i
 
@@ -96,11 +101,11 @@ services:
       - |
         npm run develop
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl","localhost:1337"]
-      interval: 1s
-      timeout: 3s
-      retries: 30
+    #healthcheck:
+    #  test: ["CMD", "curl","-f","localhost:1337"]
+    #  interval: 3s
+    #  timeout: 3s
+    #  retries: 15
     depends_on:
       init-strapi:
         condition: service_completed_successfully
@@ -133,7 +138,7 @@ services:
       timeout: 3s
       retries: 30
 
-  bhadminer:
+  adminer:
     image: adminer
     restart: always
 

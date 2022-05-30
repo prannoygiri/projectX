@@ -6,6 +6,8 @@ WORKDIR /home/node/app
 
 FROM base as dev
 
+RUN apk add curl
+
 RUN npm install -g nodemon
 
 USER node
